@@ -1,6 +1,6 @@
 ---
 description: React component authoring rules for Excalidraw — applies only to .tsx files (module-specific rule with globs)
-globs: ["**/*.tsx", "excalidraw-app/src/**/*.tsx", "packages/excalidraw/src/**/*.tsx"]
+globs: ["excalidraw-app/src/**/*.tsx", "packages/excalidraw/src/**/*.tsx"]
 alwaysApply: false
 ---
 

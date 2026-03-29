@@ -32,7 +32,14 @@ alwaysApply: true
 
 ## Pre-commit Hooks
 
-Husky runs `lint-staged` on every commit:
+Husky is configured for `lint-staged`; ensure `.husky/pre-commit` contains an active `yarn lint-staged` command (the line must not be commented out):
+
+```sh
+#!/bin/sh
+yarn lint-staged
+```
+
+When active, lint-staged runs:
 - ESLint (with auto-fix) on staged `.js`, `.ts`, `.tsx` files.
 - Prettier (with auto-write) on staged `.css`, `.scss`, `.json`, `.md`, `.html`, `.yml` files.
 
@@ -40,7 +47,16 @@ Do not skip hooks (`--no-verify`) — fix lint errors instead.
 
 ## How to Verify
 
-1. Attempt a commit with a bad message format (`git commit -m "stuff"`) — the pre-commit hook should run lint-staged successfully but the commit message itself will not be blocked (no commitlint is configured yet). Review and correct manually.
-2. Check that husky hooks are installed: `cat .husky/pre-commit` — should show `yarn lint-staged`.
+1. Check that the pre-commit hook is executable and active:
+
+   ```bash
+   cat .husky/pre-commit
+   ```
+
+   The `yarn lint-staged` line must be present and **not** commented out. If it is commented, uncomment it.
+
+2. Attempt a commit with a bad message format (`git commit -m "stuff"`) — the pre-commit hook runs lint-staged; commit message format is not blocked automatically (no commitlint configured). Review and correct manually.
+
 3. Stage a file with an ESLint error and try to commit — lint-staged should block the commit and output the error.
-4. Run `git log --oneline -10` on the repo and confirm recent commits follow the Conventional Commits pattern.
+
+4. Run `git log --oneline -10` and confirm recent commits follow the Conventional Commits pattern.

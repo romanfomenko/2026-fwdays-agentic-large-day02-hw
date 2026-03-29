@@ -29,7 +29,7 @@ alwaysApply: true
 ## Enums & Unions
 
 - Prefer string literal unions (`"loading" | "success" | "error"`) over enums for small fixed sets.
-- Use `const enum` only when you need reverse-lookup and control both producer and consumer.
+- Use regular `enum` (not `const enum`) when you need runtime reverse-lookup; `const enum` values are inlined at compile-time and do not exist in JavaScript output, so they cannot be reverse-mapped at runtime.
 
 ## How to Verify
 

@@ -33,16 +33,20 @@ alwaysApply: true
 
 ## How to Verify
 
-1. Build the main package and check its size:
+1. Build the main package and check its gzip size:
+
    ```bash
    yarn build:excalidraw
-   du -sh packages/excalidraw/dist
+   gzip -c packages/excalidraw/dist/excalidraw.esm.js | wc -c
    ```
-   Alert if the ESM bundle exceeds 500 KB gzipped.
+
+   Alert if the gzip size exceeds 500 KB (512000 bytes).
 2. Run `yarn build:app` and open `excalidraw-app/build/stats.html` (Vite bundle visualizer) to verify no unexpected large chunks appeared.
 3. Profile the app with Chrome DevTools Performance tab — `requestAnimationFrame` callbacks should stay under 16 ms (60 fps).
-4. Search for forbidden lodash full-package imports:
+4. Search for forbidden lodash full-package imports (both quote styles):
+
    ```bash
-   grep -rn "from 'lodash'" packages/ excalidraw-app/src --include="*.ts" --include="*.tsx"
+   rg -n 'from\s+["'"'"']lodash["'"'"']' packages/ excalidraw-app/src -g '*.ts' -g '*.tsx'
    ```
+
    Should return no results — only sub-package imports like `lodash.throttle` are allowed.

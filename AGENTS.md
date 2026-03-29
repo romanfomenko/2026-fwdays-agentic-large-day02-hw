@@ -21,9 +21,25 @@ This document describes how AI coding agents should understand, navigate, and co
 
 ---
 
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Language | TypeScript 5.x (strict mode) |
+| UI Framework | React 19 |
+| Build — app | Vite 5 |
+| Build — packages | esbuild (ESM output) |
+| Package manager | Yarn 1 workspaces |
+| Testing | Vitest 3 + jsdom + @testing-library/react |
+| Linting | ESLint (`@excalidraw/eslint-config`) + Prettier |
+| State management | Jotai atoms (app-layer only) |
+| Rendering | HTML5 Canvas 2D API |
+
+---
+
 ## Architecture
 
-```
+```text
 excalidraw-app  (consumer)
       │
       ├── @excalidraw/excalidraw  (core library)
@@ -84,7 +100,8 @@ Commands live in `.cursor/commands/*.md` and are invokable with `/command-name`.
 Performs a structured code review covering correctness, security, TypeScript quality, React patterns, performance, and import hygiene. Returns a Markdown checklist with severity ratings and an overall verdict.
 
 **Run with:**
-```
+
+```text
 /review-code packages/excalidraw/src/renderer/renderScene.ts
 ```
 
@@ -93,7 +110,8 @@ Performs a structured code review covering correctness, security, TypeScript qua
 Scaffolds a new React component following all project rules: named export, `<Name>Props` interface, accessible markup, correct import order. Optionally generates a matching Vitest test file.
 
 **Run with:**
-```
+
+```text
 /create-component ColorPicker --dir packages/excalidraw/src/components --with-test
 ```
 
@@ -191,6 +209,7 @@ Context7 is active globally. No per-project configuration is needed.
 3. Returned accurate documentation for `coverage.thresholds` including the `perFile` boolean option and `100` shorthand — information that was not in the agent's training data for Vitest 3.x.
 
 **Result:** The agent correctly suggested:
+
 ```ts
 coverage: {
   thresholds: {
