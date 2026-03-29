@@ -1,0 +1,51 @@
+---
+description: React component authoring rules for Excalidraw — applies only to .tsx files (module-specific rule with globs)
+globs: ["**/*.tsx", "excalidraw-app/src/**/*.tsx", "packages/excalidraw/src/**/*.tsx"]
+alwaysApply: false
+---
+
+# React Component Rules (module-specific)
+
+These rules apply **only to `.tsx` files** containing React components.
+
+## Component Structure
+
+- One component per file; file name must match the exported component name in PascalCase.
+- Export the component as a named export; avoid default exports for components (improves refactor safety).
+- Place prop types/interfaces directly above the component definition in the same file.
+- Keep components focused — if a component exceeds ~150 lines, consider splitting into smaller sub-components.
+
+## Props
+
+- Define props with an `interface` named `<ComponentName>Props`.
+- Destructure props at the top of the function body.
+- Use explicit `React.FC` or typed arrow functions; prefer the latter to allow generic components.
+- Mark optional props with `?`; provide sensible defaults via destructuring defaults, not inside JSX.
+
+## Hooks
+
+- Call hooks at the top level — never inside conditionals, loops, or nested functions.
+- Custom hooks must be prefixed with `use` and live in a `hooks/` directory.
+- Avoid creating new object/array literals directly inside `useMemo`/`useCallback` dependency arrays.
+
+## Performance
+
+- Wrap expensive child trees with `React.memo` only when profiling confirms unnecessary re-renders.
+- Prefer `useCallback` for stable event handlers passed to memoized children.
+- Avoid inline anonymous functions in JSX for performance-critical components (e.g., canvas overlays).
+
+## Accessibility
+
+- Every interactive element must have an accessible label (`aria-label`, `aria-labelledby`, or visible text).
+- Use semantic HTML elements (`<button>`, `<nav>`, `<main>`) before resorting to `<div>` with role.
+
+## How to Verify
+
+1. Run `yarn test:code` — ESLint React rules must pass with zero warnings.
+2. Check that every new `.tsx` file contains at most one exported component.
+3. Run `yarn test:typecheck` — prop interfaces must satisfy TypeScript strict mode.
+4. Search for missing `aria-label` on `<button>` elements:
+   ```bash
+   grep -r "<button" packages/excalidraw/src --include="*.tsx" | grep -v "aria-"
+   ```
+   Investigate any matches to confirm they have accessible text via children.

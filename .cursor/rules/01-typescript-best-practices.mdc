@@ -1,0 +1,39 @@
+---
+description: TypeScript best practices for the Excalidraw monorepo — type safety, strict patterns, and naming conventions
+globs: ["**/*.ts", "**/*.tsx"]
+alwaysApply: true
+---
+
+# TypeScript Best Practices
+
+## Type Safety
+
+- Always use explicit return types on exported functions and class methods.
+- Prefer `interface` over `type` for object shapes that may be extended; use `type` for unions and intersections.
+- Never use `any` — use `unknown` and narrow with type guards, or use precise generics.
+- Avoid non-null assertions (`!`) unless you can prove null is impossible; prefer optional chaining (`?.`) and nullish coalescing (`??`).
+- Use `const` for all variable declarations unless mutation is required.
+
+## Generics
+
+- Name generic parameters descriptively when context is unclear (`TElement`, `TConfig`), single letters (`T`, `K`, `V`) only in well-known patterns (Array, Map).
+- Constrain generics appropriately (`T extends SomeBase`) rather than leaving them unconstrained.
+
+## Naming Conventions
+
+- PascalCase for types, interfaces, enums, and React components.
+- camelCase for variables, functions, and object properties.
+- SCREAMING_SNAKE_CASE for module-level constants that are truly immutable values.
+- Boolean variables and props should start with `is`, `has`, `can`, or `should`.
+
+## Enums & Unions
+
+- Prefer string literal unions (`"loading" | "success" | "error"`) over enums for small fixed sets.
+- Use `const enum` only when you need reverse-lookup and control both producer and consumer.
+
+## How to Verify
+
+1. Run `yarn test:typecheck` — zero TypeScript errors expected.
+2. Run `yarn test:code` (ESLint) — no `@typescript-eslint/no-explicit-any` violations.
+3. Open any exported function in `packages/excalidraw/src` and confirm it has an explicit return type.
+4. Search for `as any` occurrences: `grep -r "as any" packages/ --include="*.ts" --include="*.tsx"` — should return zero results.

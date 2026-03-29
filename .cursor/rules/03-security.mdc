@@ -1,0 +1,53 @@
+---
+description: Security rules for Excalidraw — covers XSS prevention, safe DOM manipulation, dependency hygiene, and secrets management
+globs: ["**/*.ts", "**/*.tsx", "**/*.js"]
+alwaysApply: true
+---
+
+# Security Rules
+
+## XSS Prevention
+
+- **Never** use `dangerouslySetInnerHTML` with unsanitized user input. If needed, sanitize with DOMPurify before injecting HTML.
+- Do not construct URLs from user input without validation; always use `URL` constructor and check protocol is `https:` or `http:`.
+- Avoid `eval()`, `new Function()`, and `setTimeout(string)` — they execute arbitrary code.
+- Never pass user-controlled strings to `innerHTML`, `outerHTML`, or `document.write`.
+
+## Safe DOM Manipulation
+
+- Use `textContent` instead of `innerHTML` when inserting plain text.
+- When building SVG/HTML dynamically, create elements via `document.createElement` and set properties, not via string concatenation.
+- Sanitize file-based content (imported JSON, clipboard data) before processing — validate shape and type.
+
+## Sensitive Data
+
+- Never log, store, or transmit private keys, API tokens, or user-identifiable data to the client console or external services without explicit user consent.
+- Environment variables with secrets must be prefixed with a non-`VITE_` prefix so Vite does not bundle them into the client build.
+- Do not commit `.env` files containing real credentials — only `.env.example` with placeholders.
+
+## Dependency Hygiene
+
+- Do not introduce new direct dependencies without review; prefer packages with active maintenance and no known high/critical CVEs.
+- Run `yarn audit` before merging dependency changes; address all high and critical advisories.
+- Pin critical security-sensitive dependencies (e.g., DOMPurify) to an exact version.
+
+## Content Security Policy
+
+- New network requests to third-party domains must be accounted for in the CSP headers defined in `vercel.json` and `excalidraw-app/public/index.html`.
+- Use `rel="noopener noreferrer"` on all `<a target="_blank">` links.
+
+## How to Verify
+
+1. Search for unsafe patterns:
+   ```bash
+   grep -rn "dangerouslySetInnerHTML" packages/ excalidraw-app/src --include="*.tsx" --include="*.ts"
+   grep -rn "innerHTML" packages/ excalidraw-app/src --include="*.tsx" --include="*.ts"
+   grep -rn "eval(" packages/ excalidraw-app/src --include="*.ts" --include="*.tsx"
+   ```
+   Review every match to confirm it is safe and sanitized.
+2. Run `yarn audit` — no high/critical vulnerabilities should be unresolved.
+3. Verify no `VITE_` prefixed env vars contain secrets by checking `.env.development` and `.env.production`.
+4. Check all `<a target="_blank">` in JSX have `rel="noopener noreferrer"`:
+   ```bash
+   grep -rn 'target="_blank"' packages/ excalidraw-app/src --include="*.tsx" | grep -v "noopener"
+   ```

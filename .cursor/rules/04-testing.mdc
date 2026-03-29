@@ -1,0 +1,50 @@
+---
+description: Testing standards for Excalidraw using Vitest — test structure, coverage targets, and mocking rules
+globs: ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"]
+alwaysApply: false
+---
+
+# Testing Standards
+
+## Test Structure
+
+- Follow the **Arrange–Act–Assert** pattern: set up state, perform the action, assert the outcome.
+- Use descriptive test names that express intent: `it("returns null when element has no children")`, not `it("works")`.
+- Group related tests in `describe` blocks named after the unit under test.
+- Keep each `it` block focused on a single behavior — one logical assertion per test (multiple `expect` calls are fine if they all verify the same behavior).
+
+## What to Test
+
+- Test public interfaces, not implementation details — if you have to access private members, reconsider the design.
+- Unit-test pure functions in `packages/math`, `packages/common`, and `packages/utils` exhaustively.
+- Integration-test React components with `@testing-library/react` — interact via accessible queries (`getByRole`, `getByLabelText`).
+- Do not write tests that only verify that a mock was called with specific arguments — test observable side effects instead.
+
+## Mocking
+
+- Mock only external I/O (network, localStorage, canvas API) — do not mock modules in the same package unless absolutely necessary.
+- Use `vi.spyOn` for partial mocks; use `vi.mock` for full module replacement (document the reason).
+- Reset all mocks in `afterEach` to prevent state leakage between tests.
+
+## Coverage Targets (vitest.config.mts thresholds)
+
+| Metric | Minimum |
+|---|---|
+| Lines | 60% |
+| Branches | 70% |
+| Functions | 63% |
+| Statements | 60% |
+
+Do not decrease these thresholds when adding new code.
+
+## Performance
+
+- Avoid `setTimeout` / `waitFor` with magic delays — use `waitFor` with condition predicates.
+- Tests must complete in < 5 s individually; flag tests exceeding this as slow and optimize.
+
+## How to Verify
+
+1. Run `yarn test:app --watch=false` — all tests must pass.
+2. Run `yarn test:coverage` — confirm coverage thresholds are met (check `v8` output table).
+3. Run `yarn test:typecheck` — test files must also pass TypeScript checks.
+4. Search for skipped tests before merging: `grep -rn "\.skip\|xit\|xdescribe" --include="*.test.*"` — all skips must have a linked issue comment.

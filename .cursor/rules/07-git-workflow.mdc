@@ -1,0 +1,46 @@
+---
+description: Git workflow and commit standards for the Excalidraw monorepo
+globs: []
+alwaysApply: true
+---
+
+# Git Workflow Rules
+
+## Commits
+
+- Use **Conventional Commits** format: `<type>(<scope>): <short description>`.
+  - Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `perf`, `style`.
+  - Scope is the package or area: `excalidraw`, `common`, `element`, `math`, `app`, `ci`.
+  - Example: `fix(element): prevent negative width on text resize`.
+- Subject line: imperative mood, max 72 characters, no trailing period.
+- Body (if needed): explain *why*, not *what* — the diff already shows what changed.
+- Reference issues in the footer: `Closes #1234` or `Refs #5678`.
+
+## Branching
+
+- Branch names: `<type>/<short-description>` — e.g., `feat/collab-cursors`, `fix/text-resize-crash`.
+- Feature branches cut from `master`; never commit directly to `master`.
+- Keep branches short-lived — rebase on `master` before opening a PR.
+
+## Pull Requests
+
+- PR title must follow the same Conventional Commits format as the merge commit.
+- Link the related issue in the PR description.
+- Request review from at least one team member before merging.
+- All CI checks (TypeScript, ESLint, tests) must be green before merge.
+- Squash-merge feature branches; preserve merge commits for release branches.
+
+## Pre-commit Hooks
+
+Husky runs `lint-staged` on every commit:
+- ESLint (with auto-fix) on staged `.js`, `.ts`, `.tsx` files.
+- Prettier (with auto-write) on staged `.css`, `.scss`, `.json`, `.md`, `.html`, `.yml` files.
+
+Do not skip hooks (`--no-verify`) — fix lint errors instead.
+
+## How to Verify
+
+1. Attempt a commit with a bad message format (`git commit -m "stuff"`) — the pre-commit hook should run lint-staged successfully but the commit message itself will not be blocked (no commitlint is configured yet). Review and correct manually.
+2. Check that husky hooks are installed: `cat .husky/pre-commit` — should show `yarn lint-staged`.
+3. Stage a file with an ESLint error and try to commit — lint-staged should block the commit and output the error.
+4. Run `git log --oneline -10` on the repo and confirm recent commits follow the Conventional Commits pattern.

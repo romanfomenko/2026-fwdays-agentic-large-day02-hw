@@ -1,0 +1,51 @@
+---
+description: Import ordering and module boundary rules for the Excalidraw monorepo
+globs: ["**/*.ts", "**/*.tsx"]
+alwaysApply: true
+---
+
+# Import Rules
+
+## Ordering
+
+Imports must be ordered in the following groups (enforced by `eslint-plugin-import`):
+
+1. **Node built-ins** — `path`, `fs`, `url`
+2. **External packages** — `react`, `react-dom`, third-party libraries
+3. **Internal workspace packages** — `@excalidraw/common`, `@excalidraw/element`, `@excalidraw/math`
+4. **Relative imports** — `../`, `./`
+5. **Side-effect imports** — `import "./styles.css"`
+6. **Type-only imports** — `import type { Foo } from "./foo"` (always last)
+
+Separate each group with a blank line.
+
+## Module Boundaries
+
+- Do not import from `packages/excalidraw/src` internals directly — always go through the package's public export (`@excalidraw/excalidraw`).
+- Avoid barrel-file (`index.ts`) imports within a package when importing a single symbol — import directly from the source file to preserve tree-shaking.
+- The `excalidraw-app` must not be imported by any `packages/*` — dependency direction is one-way.
+- Circular imports are forbidden. If you need to break a cycle, introduce a shared abstraction in `packages/common`.
+
+## Type Imports
+
+- Use `import type { ... }` for type-only imports — this improves build performance and avoids circular dependency issues at runtime.
+- Never mix value and type imports in the same statement when using `import type`.
+
+## Paths
+
+- Use workspace aliases (`@excalidraw/common`) not relative cross-package paths (`../../common/src`).
+- Use absolute imports configured in `tsconfig.json` paths for deep module references within `excalidraw-app`.
+
+## How to Verify
+
+1. Run `yarn test:code` — the `import/order` and `import/no-cycle` ESLint rules enforce ordering and cycles automatically.
+2. Check for cross-package relative imports:
+   ```bash
+   grep -rn "\.\./\.\./packages" excalidraw-app/src --include="*.ts" --include="*.tsx"
+   ```
+   Should return no results.
+3. Verify type imports are used:
+   ```bash
+   grep -rn "^import {" packages/ --include="*.ts" | grep "type " | head -20
+   ```
+   Type-only imports should use `import type`, not inline `type` modifier inside `import {}`.

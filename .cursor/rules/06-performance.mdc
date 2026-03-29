@@ -1,0 +1,48 @@
+---
+description: Performance rules for Excalidraw — canvas rendering, state management, and bundle size discipline
+globs: ["**/*.ts", "**/*.tsx"]
+alwaysApply: true
+---
+
+# Performance Rules
+
+## Canvas & Rendering
+
+- Never call `setState` or dispatch store actions inside animation frames (`requestAnimationFrame`) — accumulate changes and flush once per frame.
+- Avoid creating new objects or arrays inside hot rendering paths (canvas `render`/`draw` functions) — pre-allocate and reuse.
+- Use `offscreenCanvas` for complex static layers that do not change every frame.
+- Do not force layout/reflow by reading `offsetWidth`, `getBoundingClientRect`, etc., inside a write loop — batch reads before writes.
+
+## State Management (Jotai)
+
+- Do not import `jotai` atoms directly in `packages/*` — route through the excalidraw-app store abstraction to keep packages portable.
+- Prefer derived atoms (`atom(get => ...)`) over subscribing to many individual atoms and combining in component code.
+- Avoid storing derived/computed data in atoms — compute in selectors to prevent stale cache issues.
+
+## Bundle Size
+
+- Do not add new external dependencies to `packages/excalidraw` without justifying the size cost (`bundlephobia` check or `yarn build:excalidraw` bundle analysis).
+- Use dynamic `import()` for routes, heavy modal dialogs, and optional features — keep the initial bundle lean.
+- Avoid importing entire lodash — import individual functions (`import throttle from "lodash.throttle"`).
+- Check that new SVG icons are imported as React components (SVGR) not as `<img src>` with separate network requests.
+
+## Network
+
+- API calls must be debounced or throttled when triggered by user input (search boxes, resize events).
+- Prefer WebSocket or polling with exponential backoff over polling with a fixed interval for collaboration features.
+
+## How to Verify
+
+1. Build the main package and check its size:
+   ```bash
+   yarn build:excalidraw
+   du -sh packages/excalidraw/dist
+   ```
+   Alert if the ESM bundle exceeds 500 KB gzipped.
+2. Run `yarn build:app` and open `excalidraw-app/build/stats.html` (Vite bundle visualizer) to verify no unexpected large chunks appeared.
+3. Profile the app with Chrome DevTools Performance tab — `requestAnimationFrame` callbacks should stay under 16 ms (60 fps).
+4. Search for forbidden lodash full-package imports:
+   ```bash
+   grep -rn "from 'lodash'" packages/ excalidraw-app/src --include="*.ts" --include="*.tsx"
+   ```
+   Should return no results — only sub-package imports like `lodash.throttle` are allowed.
