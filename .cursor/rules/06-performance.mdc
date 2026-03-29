@@ -1,7 +1,7 @@
 ---
 description: Performance rules for Excalidraw — canvas rendering, state management, and bundle size discipline
-globs: ["**/*.ts", "**/*.tsx"]
-alwaysApply: true
+globs: ["excalidraw-app/src/**/*.ts", "excalidraw-app/src/**/*.tsx", "packages/**/src/**/*.ts", "packages/**/src/**/*.tsx"]
+alwaysApply: false
 ---
 
 # Performance Rules
@@ -15,7 +15,7 @@ alwaysApply: true
 
 ## State Management (Jotai)
 
-- Do not import `jotai` atoms directly in `packages/*` — route through the excalidraw-app store abstraction to keep packages portable.
+- Do not import `jotai` atoms directly in `packages/*` — route through the local `packages/excalidraw/editor-jotai` adapter to keep packages portable.
 - Prefer derived atoms (`atom(get => ...)`) over subscribing to many individual atoms and combining in component code.
 - Avoid storing derived/computed data in atoms — compute in selectors to prevent stale cache issues.
 

@@ -6,7 +6,7 @@ This document describes how AI coding agents should understand, navigate, and co
 
 ## Project Overview
 
-**Excalidraw** is an open-source, virtual hand-drawn style whiteboard. This monorepo contains:
+**Excalidraw** is an open-source, virtual hand-drawn-style whiteboard. This monorepo contains:
 
 | Package / App | Purpose |
 |---|---|
