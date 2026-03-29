@@ -10,7 +10,7 @@ alwaysApply: true
 
 - Never call `setState` or dispatch store actions inside animation frames (`requestAnimationFrame`) — accumulate changes and flush once per frame.
 - Avoid creating new objects or arrays inside hot rendering paths (canvas `render`/`draw` functions) — pre-allocate and reuse.
-- Use `offscreenCanvas` for complex static layers that do not change every frame.
+- Use `OffscreenCanvas` for complex static layers that do not change every frame.
 - Do not force layout/reflow by reading `offsetWidth`, `getBoundingClientRect`, etc., inside a write loop — batch reads before writes.
 
 ## State Management (Jotai)

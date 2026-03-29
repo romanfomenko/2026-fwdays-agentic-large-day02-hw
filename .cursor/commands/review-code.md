@@ -4,7 +4,7 @@ Perform a thorough code review of the currently open file (or the file path prov
 
 ## Usage
 
-```
+```text
 /review-code [file-path]
 ```
 
