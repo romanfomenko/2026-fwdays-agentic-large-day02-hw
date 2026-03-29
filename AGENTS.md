@@ -82,7 +82,7 @@ Rules live in `.cursor/rules/*.mdc`. Each rule has a `globs` field specifying wh
 | # | File | Scope | Summary |
 |---|---|---|---|
 | 1 | `01-typescript-best-practices.mdc` | `**/*.ts`, `**/*.tsx` | No `any`, explicit return types, naming conventions |
-| 2 | `02-react-components.mdc` | `**/*.tsx` | One component per file, prop interfaces, accessibility |
+| 2 | `02-react-components.mdc` | `excalidraw-app/src/**/*.tsx`, `packages/excalidraw/src/**/*.tsx` | One component per file, prop interfaces, accessibility |
 | 3 | `03-security.mdc` | `**/*.ts`, `**/*.tsx`, `**/*.js` | XSS prevention, safe DOM, secrets hygiene |
 | 4 | `04-testing.mdc` | `**/*.test.*`, `**/*.spec.*` | AAA pattern, real DOM, coverage thresholds |
 | 5 | `05-imports.mdc` | `**/*.ts`, `**/*.tsx` | Import order, module boundaries, `import type` |
